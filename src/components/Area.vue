@@ -17,7 +17,7 @@
             }
         },
         mounted() {
-            loadData();
+            this.loadData();
         },
         methods: {
             loadData() {
