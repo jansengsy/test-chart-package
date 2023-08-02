@@ -1,6 +1,6 @@
 {
   "name": "arc_charts",
-  "version": "0.1.4",
+  "version": "0.1.9",
   "description": "A package containing the shared interactive chart components to be used by Noahweb and Suggestus",
   "scripts": {
     "build": "vue-cli-service build",
@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "core-js": "^3.6.5",
+    "d3": "^5.16.0",
     "vue": "^2.6.11"
   },
   "main": "./dist/arc_charts_test.common.js",
