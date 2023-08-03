@@ -1,13 +1,13 @@
 <template>
-    <div id="container">
-        <h4>This is an area chart</h4>
-        <svg id="chart_12g4xfpQvkuCDCd3WEGP2Q" class="svg"></svg>
-        <div id="tooltip_12g4xfpQvkuCDCd3WEGP2Q" class="tooltip"></div>
+    <div :id="container_id">
+        <svg :id="svg_id" class="svg"></svg>
+        <div :id="tooltip_id" class="tooltip"></div>
     </div>
 </template>
 
 <script>
     import * as d3 from "d3";
+    import { uid } from 'uid';
 
     export default {
         name: "Area",
@@ -28,10 +28,15 @@
                 areaHeight: 0,
                 legendHeight: 0,
 
+                // Really really temp stuff
+                temp_uid: 0,
+                svg_id: "",
+                tooltip_id: "",
+                container_id: "",
 
                 globalChartData: {},
                 test_data: {
-                    "Name": "chart_12g4xfpQvkuCDCd3WEGP2Q",
+                    "Name": "test",
                     "SummaryTable": {},
                     "XValues": {},
                     "YValues": {},
@@ -219,15 +224,31 @@
                 }
             }
         },
+        created() {
+            this.temp_uid = uid();
+            this.svg_id = `chart_${this.temp_uid}`;
+            this.tooltip_id = `tooltip_${this.temp_uid}`;
+            this.test_data.Name = `chart_${this.temp_uid}`;
+            this.container_id = `container_${this.temp_uid}`;
+        },
         mounted() {
+            window.addEventListener('resize', () => this.realTimeAreaChartOnResize(this.temp_uid));
             this.loadData();
         },
+        unmounted() {
+            window.removeEventListener('resize', () => this.realTimeAreaChartOnResize(this.temp_uid));
+        },
         methods: {
+            redraw() {
+
+            },
+            clearChartDrawArea(id) {
+                const container = d3.select(`#container_${id}`);
+                container.selectAll(`.legend_${id}`).remove();
+                container.selectAll(".chart_svg").remove();
+            },
             loadData() {
                 // Initial creation (this is a step for the C3 pipeline but, for now, D3 charts need this)
-
-                
-
                 let uid;
 
                 uid = this.test_data.Name.replace("chart_", "");
@@ -235,7 +256,7 @@
 
                 const colours = Object.values(this.test_data.Colours).map(value => '#' + value);
                 
-                //clearChartDrawArea(uid);
+                this.clearChartDrawArea(uid);
 
                 // Hide the spinner as we're now drawing the chart
                 //hideChartSpinner(test_data);
@@ -406,7 +427,8 @@
             },
             // Unused argument as at the moment this method is shared with c3 charts (which do require this value - will remove later)
             realTimeAreaChartOnResize(data) {
-                updateRealTimeAreaChart(this.globalChartData[data.uid.replace("chart_", "")]);
+                this.loadData(this.test_data)
+                //this.loadData(this.globalChartData[data.uid.replace("chart_", "")]);
             },
             highlightAsset(asset, uid) {
                 d3.select(`#chart_${uid}`).selectAll(`.${asset.item}`).attr("fill", "yellow");
@@ -538,10 +560,5 @@
     .svg {
         width: 100%;
         height: 100%;
-    }
-    
-    #container {
-        width: 800px;
-        height: 600px;
     }
 </style>
